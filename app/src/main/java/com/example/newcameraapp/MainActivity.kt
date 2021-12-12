@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,19 +51,24 @@ class MainActivity : AppCompatActivity() {
 
             val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
 
+            var outputText = " "
             labeler.process(image)
                 .addOnSuccessListener { labels ->
                     // Task completed successfully
                     Log.i("Dom", "successfully processed image")
                     for (label in labels) {
                         val text = label.text
-                        val confidence = label.confidence.toString()
+                        val confidence = (label.confidence*100).roundToInt().toString()
                         val index = label.index
                         val textView = findViewById<TextView>(R.id.textView)
-                        Log.i("Dom", "detected: " + text + " with confidence: " + confidence)
-                        if (confidence > 0.9.toString())
-                        textView.text = "Detected " + text + " with confidence " + confidence
-                        textView.movementMethod = ScrollingMovementMethod()
+                        outputText += "$text : $confidence %\n"
+                        textView.text = outputText
+                        Log.i("Dom", "LOOP > [$text]:$confidence")
+
+                        //Log.i("Dom", "detected: " + text + " with confidence: " + confidence)
+                        //if (confidence > 0.9.toString())
+                        //textView.text = "Detected " + text + " with confidence " + confidence
+                        //textView.movementMethod = ScrollingMovementMethod()
 
                     }
 
